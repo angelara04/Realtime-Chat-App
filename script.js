@@ -1,53 +1,68 @@
-// Connect to the Socket.IO server running at localhost on port 3000
+// Connect to the Socket.IO server
 const socket = io('http://localhost:3000');
 
-// Select the message container, form, and input field from the DOM
+// DOM elements
 const messageContainer = document.getElementById('message-container');
 const messageForm = document.getElementById('send-container');
 const messageInput = document.getElementById('message-input');
 
-// Prompt the user for their name when they join the chat
+// Prompt user for their name and notify server
 const name = prompt('What is your name?');
-
-// Display a message indicating that the user has joined
-appendMessage('You joined');
-
-// Notify the server about the new user
 socket.emit('new-user', name);
 
-// Listen for incoming chat messages from other users
+// Receive a chat message from another user
 socket.on('chat-message', data => {
-  // Display the message with the sender's name and timestamp (if provided)
-  appendMessage(`${data.time || getTime()} - ${data.name}: ${data.message}`);
+  appendMessage(`${data.name}: ${data.message}`, 'received', data.time);
 });
 
-// Listen for notification when a new user connects
+// Notify when a user connects to the chat
 socket.on('user-connected', name => {
-  appendMessage(`${getTime()} - ${name} connected`);
+  appendSystemMessage(`${getTime()} - ${name} joined`);
 });
 
-// Listen for notification when a user disconnects
+// Notify when a user disconnects from the chat
 socket.on('user-disconnected', name => {
-  appendMessage(`${getTime()} - ${name} disconnected`);
+  appendSystemMessage(`${getTime()} - ${name} disconnected`);
 });
 
-// Handle form submission (when the user sends a message)
+// Handle sending a message
 messageForm.addEventListener('submit', e => {
-  e.preventDefault(); // Prevent the form from refreshing the page
-  const message = messageInput.value; // Get the input value
-  appendMessage(`${getTime()} - You: ${message}`); // Display the message in the chat
-  socket.emit('send-chat-message', message); // Send the message to the server
-  messageInput.value = ''; // Clear the input field
+  e.preventDefault(); // Prevent form from refreshing the page
+  const message = messageInput.value;
+  
+  // Show the message in your chat window
+  appendMessage(`You: ${message}`, 'sent', getTime());
+  
+  // Send the message to the server
+  socket.emit('send-chat-message', message);
+  
+  // Clear the input box
+  messageInput.value = '';
 });
 
-// Function to add a message element to the message container
-function appendMessage(message) {
+// Function to append a chat message to the chat window
+function appendMessage(text, type, timestamp) {
   const messageElement = document.createElement('div');
-  messageElement.innerText = message;
-  messageContainer.append(messageElement);
+  messageElement.classList.add(type); // 'sent' or 'received'
+  messageElement.innerText = text;
+
+  const timestampElement = document.createElement('div');
+  timestampElement.classList.add('timestamp');
+  timestampElement.innerText = timestamp;
+
+  messageElement.appendChild(timestampElement);
+  messageContainer.appendChild(messageElement);
 }
 
-// Function to get the current time formatted as "hh:mm AM/PM"
+// Function to display system messages (user joined/left)
+function appendSystemMessage(text) {
+  const systemMessage = document.createElement('div');
+  systemMessage.classList.add('system-message');
+  systemMessage.innerText = text;
+  messageContainer.appendChild(systemMessage);
+}
+
+// Helper function to get the current time in HH:MM format
 function getTime() {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
