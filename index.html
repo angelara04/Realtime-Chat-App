@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"> <!-- Sets the character encoding for the document -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive layout on mobile -->
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"> <!-- Ensures compatibility with older versions of IE -->
+  <title>Chat App</title>
+
+  <!-- Load Socket.IO client from your Node.js server -->
+  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+  <!-- Load your custom JavaScript file -->
+  <script defer src="script.js"></script>
+
+  <!-- Inline CSS styles for layout and appearance -->
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Container for all messages */
+    #message-container {
+      width: 80%;
+      max-width: 1200px;
+    }
+
+    /* Style for each message bubble */
+    #message-container div {
+      background-color: #CCC;
+      padding: 5px;
+    }
+
+    /* Alternate background color for every second message */
+    #message-container div:nth-child(2n) {
+      background-color: #FFF;
+    }
+
+    /* Form container for sending messages (fixed at the bottom) */
+    #send-container {
+      position: fixed;
+      padding-bottom: 30px;
+      bottom: 0;
+      background-color: white;
+      max-width: 1200px;
+      width: 80%;
+      display: flex;
+    }
+
+    /* Input field takes up available space */
+    #message-input {
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Display chat messages -->
+  <div id="message-container"></div>
+
+  <!-- Form to send a new message -->
+  <form id="send-container">
+    <input type="text" id="message-input">
+    <button type="submit" id="send-button">Send</button>
+  </form>
+</body>
+</html>
