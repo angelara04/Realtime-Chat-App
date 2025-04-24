@@ -10,6 +10,9 @@ const messageInput = document.getElementById('message-input');
 const name = prompt('What is your name?');
 socket.emit('new-user', name);
 
+// Append "You joined" system message for the current user
+appendSystemMessage(`${getTime()} - You joined`);
+
 // Receive a chat message from another user
 socket.on('chat-message', data => {
   appendMessage(`${data.name}: ${data.message}`, 'received', data.time);
